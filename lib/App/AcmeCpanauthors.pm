@@ -77,12 +77,13 @@ $SPEC{acme_cpanauthors} = {
             completion => sub {
                 require Complete::Module;
                 my %args = @_;
-                Complete::Module::complete_module(
+                my $res = Complete::Module::complete_module(
                     word => $args{word},
                     find_pod => 0,
                     find_prefix => 0,
                     ns_prefix => 'Acme::CPANAuthors',
                 );
+                $res->{words} = [grep {!_should_skip($_)} @{$res->{words}}];
             },
         },
         lcpan => {
