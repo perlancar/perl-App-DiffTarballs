@@ -127,6 +127,7 @@ sub acme_cpanauthors {
 
     my $action = $args{action};
     my $detail = $args{detail};
+    my $module = $args{module};
 
     if ($action eq 'list_installed') {
 
@@ -195,6 +196,14 @@ sub acme_cpanauthors {
             }
         }
         return [412, "Can't find a way to list CPAN mirrors"];
+
+    } elsif ($action eq 'list_ids') {
+
+        return [400, "Please specify module"] unless $module;
+
+        require Acme::CPANAuthors;
+        my $authors = Acme::CPANAuthors->new($module);
+        [200, "OK", [$authors->id]];
 
     } else {
 
