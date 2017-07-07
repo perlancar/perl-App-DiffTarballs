@@ -1,3 +1,10 @@
+0.003   2017-07-07 (PERLANCAR)
+
+	- No functional changes.
+
+	- [dist] Enable static install.
+
+
 0.002   2016-10-01 (PERLANCAR)
 
 	- [ux] In tab completion, also exclude Acme::CPANAuthors modules
