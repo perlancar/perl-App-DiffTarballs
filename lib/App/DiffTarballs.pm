@@ -57,6 +57,11 @@ sub diff_tarballs {
 
     my %args = @_;
 
+    return [404, "No such file or directory: $args{tarball1}"]
+        unless -f $args{tarball1};
+    return [404, "No such file or directory: $args{tarball2}"]
+        unless -f $args{tarball2};
+
     my $abs_tarball1 = Cwd::abs_path($args{tarball1});
     my $abs_tarball2 = Cwd::abs_path($args{tarball2});
     return [304, "$args{tarball1} and $args{tarball2} are the same file"]
