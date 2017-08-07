@@ -54,6 +54,7 @@ $SPEC{diff_tarballs} = {
 sub diff_tarballs {
     require Cwd;
     require File::Temp;
+    require ShellQuote::Any::Tiny;
 
     my %args = @_;
 
@@ -94,7 +95,13 @@ sub diff_tarballs {
 
     rename "$dir1/$glob1[0]", "$dir2/$name1";
 
-    system({log=>1}, "diff", "-ruN", $name1, $name2);
+    my $diff_cmd = $ENV{DIFF} // "diff -ruN";
+    system({log=>1, shell=>1}, join(
+        " ",
+        $diff_cmd,
+        ShellQuote::Any::Tiny::shell_quote($name1),
+        ShellQuote::Any::Tiny::shell_quote($name2),
+    ));
 
     unless ($cleanup) {
         log_info("Not cleaning up temporary directory %s", $dir2);
@@ -117,3 +124,7 @@ See the included script L<diff-tarballs>.
 
 If set to true, will cause temporary directories to not being cleaned up after
 the program is done.
+
+=head2 DIFF => str
+
+Set diff command to use. Defaults to C<diff -ruN>.
