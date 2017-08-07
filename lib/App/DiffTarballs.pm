@@ -127,4 +127,6 @@ the program is done.
 
 =head2 DIFF => str
 
-Set diff command to use. Defaults to C<diff -ruN>.
+Set diff command to use. Defaults to C<diff -ruN>. For example, you can set it
+to C<diff --color -ruN> (C<--color> requires GNU diff 3.4 or later), or
+C<colordiff -ruN>.
