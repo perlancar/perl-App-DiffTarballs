@@ -58,6 +58,11 @@ sub diff_tarballs {
 
     my %args = @_;
 
+    return [404, "No such file or directory: $args{tarball1}"]
+        unless -f $args{tarball1};
+    return [404, "No such file or directory: $args{tarball2}"]
+        unless -f $args{tarball2};
+
     my $abs_tarball1 = Cwd::abs_path($args{tarball1});
     my $abs_tarball2 = Cwd::abs_path($args{tarball2});
 
@@ -132,3 +137,9 @@ See the included script L<diff-tarballs>.
 
 If set to true, will cause temporary directories to not being cleaned up after
 the program is done.
+
+=head2 DIFF => str
+
+Set diff command to use. Defaults to C<diff -ruN>. For example, you can set it
+to C<diff --color -ruN> (C<--color> requires GNU diff 3.4 or later), or
+C<colordiff -ruN>.
