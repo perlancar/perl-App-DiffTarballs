@@ -67,6 +67,42 @@ sub diff_tarballs {
     system({log=>1, die=>1}, "tar", "xf", $abs_tarball1);
     system({log=>1, die=>1}, "tar", "xf", $abs_tarball2);
     system("diff", "-ruN", $dir1, $dir2);
+    return [304, "$args{tarball1} and $args{tarball2} are the same file"]
+        if $abs_tarball1 eq $abs_tarball2;
+
+    my $cleanup = !$ENV{DEBUG};
+
+    my $dir1 = File::Temp::tempdir(CLEANUP => $cleanup);
+    my $dir2 = File::Temp::tempdir(CLEANUP => $cleanup);
+
+    $CWD = $dir1;
+    system({log=>1, die=>1}, "tar", "xf", $abs_tarball1);
+    my @glob1 = glob("*");
+    unless (@glob1 == 1) {
+        return [412, "$args{tarball1} did not extract to ".
+                    "a single file/directory"];
+    }
+
+    $CWD = $dir2;
+    system({log=>1, die=>1}, "tar", "xf", $abs_tarball2);
+    my @glob2 = glob("*");
+    unless (@glob2 == 1) {
+        return [412, "$args{tarball2} did not extract to ".
+                    "a single file/directory"];
+    }
+
+    my $name1 = $glob1[0];
+    my $name2 = $glob2[0];
+    $name1 .= ".0" if $name1 eq $name2;
+
+    rename "$dir1/$glob1[0]", "$dir2/$name1";
+
+    system({log=>1}, "diff", "-ruN", $name1, $name2);
+
+    unless ($cleanup) {
+        log_info("Not cleaning up temporary directory %s", $dir2);
+    }
+
     [200];
 }
 
@@ -76,3 +112,11 @@ sub diff_tarballs {
 =head1 SYNOPSIS
 
 See the included script L<diff-tarballs>.
+
+
+=head1 ENVIRONMENT
+
+=head2 DEBUG => bool
+
+If set to true, will cause temporary directories to not being cleaned up after
+the program is done.
