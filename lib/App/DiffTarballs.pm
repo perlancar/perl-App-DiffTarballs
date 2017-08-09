@@ -54,11 +54,17 @@ $SPEC{diff_tarballs} = {
 sub diff_tarballs {
     require Cwd;
     require File::Temp;
+    require ShellQuote::Any::Tiny;
 
     my %args = @_;
 
     my $abs_tarball1 = Cwd::abs_path($args{tarball1});
     my $abs_tarball2 = Cwd::abs_path($args{tarball2});
+
+    return [404, "No such file or directory: $args{tarball1}"]
+        unless -f $args{tarball1};
+    return [404, "No such file or directory: $args{tarball2}"]
+        unless -f $args{tarball2};
 
     my $dir1 = File::Temp::tempdir(CLEANUP => 1);
     my $dir2 = File::Temp::tempdir(CLEANUP => 1);
@@ -97,7 +103,13 @@ sub diff_tarballs {
 
     rename "$dir1/$glob1[0]", "$dir2/$name1";
 
-    system({log=>1}, "diff", "-ruN", $name1, $name2);
+    my $diff_cmd = $ENV{DIFF} // "diff -ruN";
+    system({log=>1, shell=>1}, join(
+        " ",
+        $diff_cmd,
+        ShellQuote::Any::Tiny::shell_quote($name1),
+        ShellQuote::Any::Tiny::shell_quote($name2),
+    ));
 
     unless ($cleanup) {
         log_info("Not cleaning up temporary directory %s", $dir2);
