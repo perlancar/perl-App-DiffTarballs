@@ -1,3 +1,12 @@
+0.004   2021-05-09  Released-By: PERLANCAR; Urgency: medium
+
+        - [bugfix] Remove an extraneous diff command.
+
+        - [ux] Observe COLOR & NO_COLOR environment variables.
+
+	- [doc] Add description.
+
+
 0.003   2017-08-07  Released-By: PERLANCAR
 
         - Grok DIFF environment.
