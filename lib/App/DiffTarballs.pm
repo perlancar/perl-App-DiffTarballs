@@ -1,6 +1,8 @@
 package App::DiffTarballs;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -22,6 +24,12 @@ my %xcompletion_tarball = (
 $SPEC{diff_tarballs} = {
     v => 1.1,
     summary => 'Diff contents of two tarballs',
+    description => <<'_',
+
+This utility extracts the two tarballs to temporary directories and then perform
+`diff -ruN` against the two. It deletes the temporary directories afterwards.
+
+_
     args => {
         tarball1 => {
             schema => 'filename*',
