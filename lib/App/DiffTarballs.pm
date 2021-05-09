@@ -91,8 +91,8 @@ sub diff_tarballs {
 
     my $cleanup = !$ENV{DEBUG};
 
-    my $dir1 = File::Temp::tempdir(CLEANUP => $cleanup);
-    my $dir2 = File::Temp::tempdir(CLEANUP => $cleanup);
+    $dir1 = File::Temp::tempdir(CLEANUP => $cleanup);
+    $dir2 = File::Temp::tempdir(CLEANUP => $cleanup);
 
     $CWD = $dir1;
     system({log=>1, die=>1}, "tar", "xf", $abs_tarball1);
@@ -116,7 +116,12 @@ sub diff_tarballs {
 
     rename "$dir1/$glob1[0]", "$dir2/$name1";
 
-    my $diff_cmd = $ENV{DIFF} // "diff -ruN";
+    my $diff_cmd = $ENV{DIFF} // do {
+        "diff -ruN" .
+            (exists $ENV{NO_COLOR} ? " --color=never" :
+             defined $ENV{COLOR} ? ($ENV{COLOR} ? " --color=always" : " --color=never") :
+             "");
+    };
     system({log=>1, shell=>1}, join(
         " ",
         $diff_cmd,
@@ -141,13 +146,28 @@ See the included script L<diff-tarballs>.
 
 =head1 ENVIRONMENT
 
-=head2 DEBUG => bool
+=head2 DEBUG
 
-If set to true, will cause temporary directories to not being cleaned up after
-the program is done.
+Bool. If set to true, will cause temporary directories to not being cleaned up
+after the program is done.
 
-=head2 DIFF => str
+=head2 DIFF
 
-Set diff command to use. Defaults to C<diff -ruN>. For example, you can set it
-to C<diff --color -ruN> (C<--color> requires GNU diff 3.4 or later), or
+String. Set diff command to use. Defaults to C<diff -ruN>. For example, you can
+set it to C<diff --color -ruN> (C<--color> requires GNU diff 3.4 or later), or
 C<colordiff -ruN>.
+
+=head2 NO_COLOR
+
+If set (and L</DIFF> is not set), will add C<--color=never> option to diff
+command.
+
+=head2 COLOR => bool
+
+If set to true (and L</DIFF> is not set), will add C<--color=always> option to
+diff command.
+
+If set to false (and L</DIFF> is not set), will add C<--color=never> option to
+diff command.
+
+Note that L</NO_COLOR> takes precedence.
