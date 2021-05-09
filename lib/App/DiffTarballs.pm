@@ -26,8 +26,9 @@ $SPEC{diff_tarballs} = {
     summary => 'Diff contents of two tarballs',
     description => <<'_',
 
-This utility extracts the two tarballs to temporary directories and then perform
-`diff -ruN` against the two. It deletes the temporary directories afterwards.
+This utility extracts the two tarballs to temporary directories and then
+performs `diff -ruN` against the two. It deletes the temporary directories
+afterwards.
 
 _
     args => {
