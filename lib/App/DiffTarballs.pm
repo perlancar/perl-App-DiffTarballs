@@ -85,7 +85,6 @@ sub diff_tarballs {
     $CWD = $dir1;
     system({log=>1, die=>1}, "tar", "xf", $abs_tarball1);
     system({log=>1, die=>1}, "tar", "xf", $abs_tarball2);
-    system("diff", "-ruN", $dir1, $dir2);
     return [304, "$args{tarball1} and $args{tarball2} are the same file"]
         if $abs_tarball1 eq $abs_tarball2;
 
